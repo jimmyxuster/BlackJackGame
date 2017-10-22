@@ -7,11 +7,108 @@
     tools:context="com.jimmyhsu.blackjackgame.MainActivity">
 
     <com.jimmyhsu.blackjackgame.ui.GameView
+        android:id="@+id/gameview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+    <ListView
+        android:id="@+id/message_view"
+        android:layout_width="100dp"
+        android:layout_height="150dp"
+        android:layout_gravity="bottom|left"
+        android:layout_marginLeft="8dp"
+        android:layout_marginBottom="8dp"
+        android:divider="@null"
+        android:stackFromBottom="true"/>
+    <LinearLayout
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/info_frame_bg"
+        android:padding="8dp"
+        android:layout_gravity="bottom|right">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="玩家"
+            android:textColor="@color/colorTitle"
+            android:textSize="14sp"/>
+        <TextView
+            android:id="@+id/balance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="余额："
+            android:textColor="@color/colorTitle"
+            android:textSize="14sp"/>
+        <TextView
+            android:id="@+id/bet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="赌注："
+            android:textColor="@color/colorTitle"
+            android:textSize="14sp"/>
+    </LinearLayout>
+
+    <!-- 下注按钮组 -->
+    <LinearLayout
+        android:id="@+id/bet_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="bottom|center_horizontal"
+        android:visibility="gone"
+        android:layout_marginBottom="1dp">
+        <Button
+            android:id="@+id/bet_plus_100"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btn_bg"
+            android:layout_marginRight="6dp"
+            android:textSize="14sp"
+            android:text="+100"
+            android:textColor="@color/colorTitle"/>
+        <Button
+            android:id="@+id/bet_plus_10"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:padding="6dp"
+            android:background="@drawable/btn_bg"
+            android:layout_marginRight="6dp"
+            android:text="+10"
+            android:textSize="14sp"
+            android:textColor="@color/colorTitle"/>
+        <Button
+            android:id="@+id/bet_minus_100"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:padding="6dp"
+            android:background="@drawable/btn_bg"
+            android:layout_marginRight="6dp"
+            android:textSize="14sp"
+            android:text="-100"
+            android:textColor="@color/colorTitle"/>
+        <Button
+            android:id="@+id/bet_minus_10"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:padding="6dp"
+            android:background="@drawable/btn_bg"
+            android:layout_marginRight="6dp"
+            android:textSize="14sp"
+            android:text="-10"
+            android:textColor="@color/colorTitle"/>
+        <Button
+            android:id="@+id/bet_confirm"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:padding="6dp"
+            android:background="@drawable/btn_bg"
+            android:textSize="14sp"
+            android:text="下注"
+            android:textColor="@color/colorTitle"/>
+    </LinearLayout>
 
 </FrameLayout>

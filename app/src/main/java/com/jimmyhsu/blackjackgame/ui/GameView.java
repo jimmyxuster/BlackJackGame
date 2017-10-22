@@ -65,6 +65,12 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
 
     private AnimatorHelper mAnimatorHelper = AnimatorHelper.getInstance();
 
+    private OnGameViewReady onGameViewReady;
+
+    public void setOnGameViewReadyListener(OnGameViewReady l) {
+        this.onGameViewReady = l;
+    }
+
     public GameView(Context context) {
         this(context, null);
     }
@@ -119,8 +125,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
             draw();
             long end = System.currentTimeMillis();
             try {
-                if (end - start < 10) {
-                    Thread.sleep(10 - (end - start));
+                if (end - start < 15) {
+                    Thread.sleep(15 - (end - start));
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -227,12 +233,19 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
         mArcLines[6] = (float) (mWidth / 2f + innerRadius * Math.cos(Math.toRadians(-ARC_END_ANGLE)));
         mArcLines[7] = (float) (innerRadius * Math.sin(Math.toRadians(ARC_END_ANGLE)));
 
-        mCardBack = UIUtils.getCardBitmap(getContext(), R.drawable.back, mFrameWidth, mFrameHeight);
+        mCardBack = UIUtils.getBitmap(getContext(), R.drawable.back, mFrameWidth, mFrameHeight);
         mCardPileRect = new Rect(mWidth - 20 - mFrameWidth, 20, mWidth - 20, 20 + mFrameHeight);
+        if (onGameViewReady != null) {
+            onGameViewReady.onReady();
+        }
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         isRunning = false;
+    }
+
+    public interface OnGameViewReady {
+        void onReady();
     }
 }

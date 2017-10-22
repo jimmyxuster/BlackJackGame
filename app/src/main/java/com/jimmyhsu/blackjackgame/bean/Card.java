@@ -6,7 +6,6 @@ import android.graphics.Canvas;
 import android.graphics.RectF;
 import android.util.Log;
 
-import com.jimmyhsu.blackjackgame.R;
 import com.jimmyhsu.blackjackgame.ui.UIUtils;
 
 /**
@@ -23,7 +22,7 @@ public class Card {
     /**
      * 牌面数字
      */
-    private int number;
+    private int point;
     /**
      * 花色
      */
@@ -38,20 +37,25 @@ public class Card {
         return mMoveAnimator;
     }
 
+    public Card(int point, int suit) {
+        this.point = point;
+        this.suit = suit;
+    }
+
     public void setMoveAnimator(ValueAnimator moveAnimator) {
         this.mMoveAnimator = moveAnimator;
     }
 
-    public int getNumber() {
-        return number;
+    public int getPoint() {
+        return point;
     }
 
-    public int getComputedNumber() {
-        return isFace() ? 10 : number;
+    public int getComputedPoint() {
+        return isFace() ? 10 : point;
     }
 
-    public void setNumber(int number) {
-        this.number = number;
+    public void setPoint(int point) {
+        this.point = point;
     }
 
     public int getSuit() {
@@ -63,11 +67,11 @@ public class Card {
     }
 
     public boolean isFace() {
-        return number > 10;
+        return point > 10;
     }
 
     public boolean isAce() {
-        return number == 1;
+        return point == 1;
     }
 
     public RectF getCurrPosition() {
@@ -91,7 +95,7 @@ public class Card {
     }
 
     public void draw(Context context, Canvas canvas, int targetWidth, int targetHeight) {
-        canvas.drawBitmap(UIUtils.getCardBitmap(context, R.drawable.c2, targetWidth, targetHeight),
+        canvas.drawBitmap(UIUtils.getCardBitmap(context, point, suit, targetWidth, targetHeight),
                 null, mCurrPosition, null);
     }
 }

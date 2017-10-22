@@ -3,6 +3,7 @@ package com.jimmyhsu.blackjackgame.ui;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.FrameLayout;
@@ -11,13 +12,23 @@ import android.widget.ImageView;
 import com.jimmyhsu.blackjackgame.bean.Card;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by xuyanzhe on 18/10/17.
  */
 
 public class AnimatorHelper {
+
+    public void showNotification(String notification) {
+
+    }
+
+    public void askDouble() {
+
+    }
 
     public enum POSITION {
         POS_STORAGE,
@@ -67,8 +78,13 @@ public class AnimatorHelper {
     }
 
     public void addCard(Card card) {
+        if (cards.indexOf(card) >= 0) return;
         cards.add(card);
         card.setCurrPosition(cardStorageX, cardStorageY, cardStorageX + cardWidth, cardStorageY + cardHeight);
+    }
+
+    public void reset() {
+        bankerCardCount = playerCardCount = 0;
     }
 
 
@@ -90,16 +106,22 @@ public class AnimatorHelper {
 
     public void animateMovement(final POSITION from, POSITION to, final Card card) {
         ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
-        animator.setDuration(1000);
+        animator.setDuration(800);
         animator.setInterpolator(new AccelerateDecelerateInterpolator());
         float startX = getPositionX(from);
         float endX = getPositionX(to);
         if (to == POSITION.POS_PLAYER) {
             endX += playerCardCount * 30;
             playerCardCount++;
+        } else if (to == POSITION.POS_BANKER) {
+            endX += bankerCardCount * 30;
+            bankerCardCount++;
         } else if (from == POSITION.POS_PLAYER) {
             startX += (playerCardCount - 1) * 30;
             playerCardCount--;
+        } else if (from == POSITION.POS_BANKER) {
+            startX += (bankerCardCount - 1) * 30;
+            bankerCardCount--;
         }
         final float dX = endX - startX;
         final float dY = getPositionY(to) - getPositionY(from);

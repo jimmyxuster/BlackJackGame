@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">BlackJackGame</string>
+    <string name="initializing">初始化游戏…</string>
+    <string name="initialized">初始化完成</string>
+    <string name="balance_title">余额：</string>
+    <string name="bet_title">赌注：</string>
 </resources>
