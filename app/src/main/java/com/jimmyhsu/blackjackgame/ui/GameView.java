@@ -11,12 +11,12 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.SweepGradient;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import com.jimmyhsu.blackjackgame.R;
 import com.jimmyhsu.blackjackgame.bean.Card;
+import com.jimmyhsu.blackjackgame.biz.BlackJackGame;
 
 
 /**
@@ -47,6 +47,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
     private Path mTitlePath;
     private Paint mTitlePaint;
     private Paint mArcPaint;
+    private Paint mPointPaint;
     private float mTitlePathLength;
     private float mTitleLength;
     private float mTitleHeight;
@@ -64,11 +65,16 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
     private Rect mCardPileRect;
 
     private AnimatorHelper mAnimatorHelper = AnimatorHelper.getInstance();
+    private BlackJackGame mGame;
 
     private OnGameViewReady onGameViewReady;
 
     public void setOnGameViewReadyListener(OnGameViewReady l) {
         this.onGameViewReady = l;
+    }
+
+    public void setGame(BlackJackGame game) {
+        mGame = game;
     }
 
     public GameView(Context context) {
@@ -109,6 +115,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
         mArcPaint.setStrokeWidth(UIUtils.sp2px(getContext(), 2));
         mArcPaint.setStrokeCap(Paint.Cap.ROUND);
         mArcPaddingDp = UIUtils.dp2px(getContext(), ARC_PADDING_DP);
+
+        mPointPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mPointPaint.setTextSize(UIUtils.sp2px(getContext(), 14));
+        mPointPaint.setColor(0xffffffff);
     }
 
     @Override
@@ -145,6 +155,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
                 drawCardPendingFrame();
                 drawCards();
                 drawCardPile();
+                drawPointSums();
             }
 
         } catch (Exception e) {
@@ -152,6 +163,21 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
         } finally {
             if (mCanvas != null) {
                 mHolder.unlockCanvasAndPost(mCanvas);
+            }
+        }
+    }
+
+    private void drawPointSums() {
+        if (mGame != null) {
+            String dealerPoint = String.valueOf(mGame.getDealerPoint());
+            String playerPoint = String.valueOf(mGame.getPlayerPoint());
+            float dealerPointWidth = mPointPaint.measureText(dealerPoint, 0, dealerPoint.length());
+            float playerPointWidth = mPointPaint.measureText(playerPoint, 0, playerPoint.length());
+            if (mGame.shouldDrawDealerPoint() && Integer.parseInt(dealerPoint) > 0) {
+                mCanvas.drawText(dealerPoint, mWidth / 2f - dealerPointWidth - 30 - mFrameWidth / 2f, 30 + mFrameHeight / 2f, mPointPaint);
+            }
+            if (Integer.parseInt(playerPoint) > 0) {
+                mCanvas.drawText(playerPoint, mWidth / 2f - playerPointWidth - 30 - mFrameWidth / 2f, mWidth / 4f + mFramePadding + mFrameHeight / 2f, mPointPaint);
             }
         }
     }

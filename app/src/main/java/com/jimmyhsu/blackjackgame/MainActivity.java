@@ -4,14 +4,12 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
@@ -81,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements GameView.OnGameVi
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         mGame = new BlackJackGame();
+        mGameView.setGame(mGame);
         mGameView.setOnGameViewReadyListener(this);
         initMessageView();
     }

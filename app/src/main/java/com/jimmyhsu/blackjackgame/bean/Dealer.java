@@ -15,4 +15,11 @@ public class Dealer extends CommonPlayer {
             c.setVisible(true);
         }
     }
+
+    public boolean isCardVisible() {
+        for (Card card : getCards()) {
+            if (!card.isVisible()) return false;
+        }
+        return true;
+    }
 }

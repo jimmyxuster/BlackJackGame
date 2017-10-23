@@ -48,7 +48,7 @@ public class CommonPlayer {
         int totalPoint = 0;
         int aCount = 0; //"A"的牌数
         for (Card c : cards) {
-            totalPoint += c.getPoint();
+            totalPoint += c.getComputedPoint();
             if (c.getPoint() == 1) {
                 aCount++;
             }

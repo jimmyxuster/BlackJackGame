@@ -54,51 +54,6 @@ public class BlackJackGame {
             //玩家没有黑杰克
             askDouble();//赌注翻倍，至多再抽一张牌
         }
-//        if (askInsurance()) {
-//            buyInsurance();
-//            printGame();
-//            if (dealer.haveBlackJack()) {
-//                dealer.setCardWhite();//将dealer的暗牌翻过来
-//                returnInsurance();
-//                setPlayerWin();
-//                return;
-//            } else {
-//                print("庄家没有黑杰克，游戏继续");
-//            }
-//        }
-//        if (!doubleRst) {//没加倍赌注可以轮询抽牌
-//            boolean addRst = askPlayerAdd();
-//            while (addRst) {
-//                player.assignCard(deck.extractTopCard(1));
-//                printGame();
-//                if (player.burst()) {
-//                    setDealerWin();
-//                    return;
-//                } else
-//                    addRst = askPlayerAdd();
-//            }
-//        } else {
-//            if (askPlayerAddOne()) {
-//                if (player.burst()) {
-//                    setDealerWin();
-//                    return;
-//                } else {
-//                    dealer.setCardWhite();
-//                    if (dealerJudge()) {
-//                        setPlayerWin();
-//                        return;
-//                    }
-//                    judgeResult();
-//                    return;
-//                }
-//            }
-//        }
-//        dealer.setCardWhite();
-//        if (dealerJudge()) {//庄家自己判断加不加牌，返回值为庄家是否burst
-//            setPlayerWin();
-//            return;
-//        }
-//        judgeResult();
     }
 
     public void proceedFirstRound() {
@@ -137,22 +92,6 @@ public class BlackJackGame {
             judgeResult();
         }
     }
-
-//    private boolean askPlayerAddOne() {
-//        print("您选择了加倍赌注，至多再抽一张牌，要抽吗？[y/n]");
-//        String input = getInput();
-//        while (!input.equals("y") && !input.equals("n")) {
-//            print("请输入正确的选项[y/n]");
-//            input = getInput();
-//        }
-//        if (input.equals("y")) {
-//            player.assignCard(deck.extractTopCard(1));
-//            printGame();
-//            return true;
-//        } else {
-//            return false;
-//        }
-//    }
 
     private void setEven() {
         dealer.setCardVisible();
@@ -266,14 +205,6 @@ public class BlackJackGame {
         if (mInteractHelper != null) {
             mInteractHelper.askDouble();
         }
-//        while (!input.equals("y") && !input.equals("n")) {
-//            System.out.println("请输入正确的选项[y/n]");
-//            input = getInput();
-//        }
-//        if (input.equals("y")) {
-//            doubleBet();
-//        } else
-//            return false;
     }
 
     public void doubleBet() {
@@ -340,5 +271,17 @@ public class BlackJackGame {
 
     public int getPlayerBet() {
         return player.getBet();
+    }
+
+    public int getDealerPoint() {
+        return dealer.getPoint();
+    }
+
+    public int getPlayerPoint() {
+        return player.getPoint();
+    }
+
+    public boolean shouldDrawDealerPoint() {
+        return dealer.isCardVisible();
     }
 }
