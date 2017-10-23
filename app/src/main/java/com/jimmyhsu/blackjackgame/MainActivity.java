@@ -11,10 +11,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -47,6 +49,16 @@ public class MainActivity extends AppCompatActivity implements GameView.OnGameVi
     TextView mBetView;
     @BindView(R.id.bet_group)
     LinearLayout mBetButtons;
+    @BindView(R.id.double_group)
+    LinearLayout mDoubleButtons;
+    @BindView(R.id.insurance_group)
+    LinearLayout mInsuranceGroup;
+    @BindView(R.id.add_card_group)
+    LinearLayout mAddCardGroup;
+    @BindView(R.id.start)
+    Button mStartButton;
+    @BindView(R.id.restart)
+    Button mResetButton;
 
     private ArrayAdapter mMessageAdapter;
     private List<String> mMessages = new ArrayList<>();
@@ -78,14 +90,38 @@ public class MainActivity extends AppCompatActivity implements GameView.OnGameVi
                 R.id.msg_item_text, mMessages));
     }
 
+    private void showPopupAnimation(final View target) {
+        Animation btnPopupAnim = AnimationUtils.loadAnimation(this, R.anim.btn_pop_up);
+        target.clearAnimation();
+        btnPopupAnim.setAnimationListener(new AnimationListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                target.setVisibility(View.VISIBLE);
+            }
+        });
+        target.startAnimation(btnPopupAnim);
+    }
+
+    private void showPopDownAnimation(final View target) {
+        Animation btnPopDownAnim = AnimationUtils.loadAnimation(this, R.anim.btn_pop_down);
+        target.clearAnimation();
+        btnPopDownAnim.setAnimationListener(new AnimationListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                target.clearAnimation();
+                target.setVisibility(View.GONE);
+            }
+        });
+        target.startAnimation(btnPopDownAnim);
+    }
+
     @Override
     public void onReady() {
         mMessages.add(getResources().getString(R.string.initializing));
         mMessageAdapter.notifyDataSetChanged();
         mGame.setInteractHelper(this);
-        mGame.initializeGame();
         mMessages.add(getResources().getString(R.string.initialized));
-        mMessages.add("请下注");
+        showPopupAnimation(mStartButton);
         mMessageAdapter.notifyDataSetChanged();
     }
 
@@ -97,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements GameView.OnGameVi
 
     @Override
     public void askInsurance() {
-
+        showPopupAnimation(mInsuranceGroup);
     }
 
     @Override
@@ -108,25 +144,17 @@ public class MainActivity extends AppCompatActivity implements GameView.OnGameVi
 
     @Override
     public void askPlayerAdd() {
-
+        showPopupAnimation(mAddCardGroup);
     }
 
     @Override
     public void askDouble() {
-
+        showPopupAnimation(mDoubleButtons);
     }
 
     @Override
     public void askBet() {
-        Animation btnPopupAnim = AnimationUtils.loadAnimation(this, R.anim.btn_pop_up);
-        mBetButtons.clearAnimation();
-        btnPopupAnim.setAnimationListener(new AnimationListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                mBetButtons.setVisibility(View.VISIBLE);
-            }
-        });
-        mBetButtons.startAnimation(btnPopupAnim);
+        showPopupAnimation(mBetButtons);
     }
 
     @Override
@@ -215,6 +243,45 @@ public class MainActivity extends AppCompatActivity implements GameView.OnGameVi
         set.start();
     }
 
+    @Override
+    public void gameEnd() {
+        showPopupAnimation(mResetButton);
+    }
+
+    /**
+     * 开始游戏按钮监听
+     */
+    @OnClick(R.id.start)
+    void startGame() {
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mGame.initializeGame();
+                mMessages.add("请下注");
+                mMessageAdapter.notifyDataSetChanged();
+            }
+        }, 500);
+        showPopDownAnimation(mStartButton);
+    }
+
+    /**
+     * 重置游戏按钮监听
+     */
+    @OnClick(R.id.restart)
+    void resetGame() {
+        mGame.resetGame();
+        showPopDownAnimation(mResetButton);
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                showPopupAnimation(mStartButton);
+            }
+        }, 1000);
+    }
+
+    /**
+     * 下注按钮点击监听
+     */
     @OnClick(R.id.bet_plus_100)
     void betPlus100() {
         mGame.addPlayerBet(100);
@@ -234,16 +301,76 @@ public class MainActivity extends AppCompatActivity implements GameView.OnGameVi
     @OnClick(R.id.bet_confirm)
     void layBet() {
         if (mGame.getPlayerBet() <= 0) return;
-        Animation btnPopDownAnim = AnimationUtils.loadAnimation(this, R.anim.btn_pop_down);
-        mBetButtons.clearAnimation();
-        btnPopDownAnim.setAnimationListener(new AnimationListenerAdapter() {
+        showPopDownAnimation(mBetButtons);
+        mHandler.postDelayed(new Runnable() {
             @Override
-            public void onAnimationEnd(Animation animation) {
-                mBetButtons.clearAnimation();
-                mBetButtons.setVisibility(View.GONE);
+            public void run() {
+                mGame.startGame();
             }
-        });
-        mBetButtons.startAnimation(btnPopDownAnim);
-        mGame.startGame();
+        }, 500);
+    }
+    /**
+     * 加倍按钮点击监听
+     */
+    @OnClick(R.id.double_do_double)
+    void doDouble() {
+        showPopDownAnimation(mDoubleButtons);
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mGame.doubleBet();
+            }
+        }, 500);
+    }
+    @OnClick(R.id.double_dont_double)
+    void dontDouble() {
+        showPopDownAnimation(mDoubleButtons);
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mGame.singleBet();
+            }
+        }, 500);
+    }
+    @OnClick(R.id.insurance_do_buy)
+    void buyInsurance() {
+        showPopDownAnimation(mInsuranceGroup);
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mGame.buyInsurance();
+                mGame.proceedFirstRound();
+            }
+        }, 500);
+    }
+    @OnClick(R.id.insurance_dont_buy)
+    void dontBuyInsurance() {
+        showPopDownAnimation(mInsuranceGroup);
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mGame.proceedFirstRound();
+            }
+        }, 500);
+    }
+    @OnClick(R.id.card_do_add)
+    void addCard() {
+        showPopDownAnimation(mAddCardGroup);
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mGame.playerChooseAdd();
+            }
+        }, 500);
+    }
+    @OnClick(R.id.card_dont_add)
+    void dontAddCard() {
+        showPopDownAnimation(mAddCardGroup);
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mGame.playerStopAdd();
+            }
+        }, 500);
     }
 }

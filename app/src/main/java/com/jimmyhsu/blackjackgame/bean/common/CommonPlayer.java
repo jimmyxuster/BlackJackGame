@@ -33,6 +33,13 @@ public class CommonPlayer {
         }
     }
 
+    public void removeAllCards(AnimatorHelper.POSITION pos) {
+        for (Card c : cards) {
+            sAnimatorHelper.animateMovement(pos, AnimatorHelper.POSITION.POS_STORAGE, c);
+        }
+        cards.clear();
+    }
+
     public Stack<Card> getCards() {
         return cards;
     }

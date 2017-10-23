@@ -95,7 +95,7 @@ public class Card {
     }
 
     public void draw(Context context, Canvas canvas, int targetWidth, int targetHeight) {
-        canvas.drawBitmap(UIUtils.getCardBitmap(context, point, suit, targetWidth, targetHeight),
+        canvas.drawBitmap(UIUtils.getCardBitmap(context, point, suit, isVisible, targetWidth, targetHeight),
                 null, mCurrPosition, null);
     }
 }

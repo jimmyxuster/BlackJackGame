@@ -12,4 +12,5 @@ public interface InteractHelper {
     void balanceChange(int oldBalance, int newBalance);
     void betChange(int oldBet, int newBet);
     void askBet();
+    void gameEnd();
 }

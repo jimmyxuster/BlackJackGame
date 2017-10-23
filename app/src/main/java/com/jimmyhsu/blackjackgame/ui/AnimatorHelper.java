@@ -3,18 +3,12 @@ package com.jimmyhsu.blackjackgame.ui;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
-import android.util.Log;
-import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 
 import com.jimmyhsu.blackjackgame.bean.Card;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by xuyanzhe on 18/10/17.
@@ -22,21 +16,11 @@ import java.util.Set;
 
 public class AnimatorHelper {
 
-    public void showNotification(String notification) {
-
-    }
-
-    public void askDouble() {
-
-    }
-
     public enum POSITION {
         POS_STORAGE,
-        POS_BANKER,
+        POS_DEALER,
         POS_PLAYER
     }
-
-    private static final int MAX_VISIBLE_STORAGE_CARD_COUNT = 3;
 
     private static AnimatorHelper instance;
 
@@ -52,7 +36,6 @@ public class AnimatorHelper {
     private float cardWidth;
     private float cardHeight;
 
-    private int storageCardCount = 0;
     private int bankerCardCount = 0;
     private int playerCardCount = 0;
 
@@ -104,7 +87,7 @@ public class AnimatorHelper {
         }
     }
 
-    public void animateMovement(final POSITION from, POSITION to, final Card card) {
+    public void animateMovement(final POSITION from, final POSITION to, final Card card) {
         ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
         animator.setDuration(800);
         animator.setInterpolator(new AccelerateDecelerateInterpolator());
@@ -113,13 +96,13 @@ public class AnimatorHelper {
         if (to == POSITION.POS_PLAYER) {
             endX += playerCardCount * 30;
             playerCardCount++;
-        } else if (to == POSITION.POS_BANKER) {
+        } else if (to == POSITION.POS_DEALER) {
             endX += bankerCardCount * 30;
             bankerCardCount++;
         } else if (from == POSITION.POS_PLAYER) {
             startX += (playerCardCount - 1) * 30;
             playerCardCount--;
-        } else if (from == POSITION.POS_BANKER) {
+        } else if (from == POSITION.POS_DEALER) {
             startX += (bankerCardCount - 1) * 30;
             bankerCardCount--;
         }
@@ -140,6 +123,9 @@ public class AnimatorHelper {
             @Override
             public void onAnimationEnd(Animator animation) {
                 card.setMoveAnimator(null);
+                if (to == POSITION.POS_STORAGE) {
+                    cards.remove(card);
+                }
             }
         });
         ValueAnimator currAnimator = card.getMoveAnimator();
@@ -154,7 +140,7 @@ public class AnimatorHelper {
         switch (pos) {
             case POS_STORAGE:
                 return cardStorageX;
-            case POS_BANKER:
+            case POS_DEALER:
                 return bankerX;
             case POS_PLAYER:
                 return playerX;
@@ -166,7 +152,7 @@ public class AnimatorHelper {
         switch (pos) {
             case POS_STORAGE:
                 return cardStorageY;
-            case POS_BANKER:
+            case POS_DEALER:
                 return bankerY;
             case POS_PLAYER:
                 return playerY;

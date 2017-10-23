@@ -14,101 +14,246 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
     <ListView
         android:id="@+id/message_view"
         android:layout_width="100dp"
         android:layout_height="150dp"
         android:layout_gravity="bottom|left"
-        android:layout_marginLeft="8dp"
         android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
         android:divider="@null"
-        android:stackFromBottom="true"/>
+        android:stackFromBottom="true"
+        android:transcriptMode="alwaysScroll"/>
+
     <LinearLayout
         android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:layout_gravity="bottom|right"
         android:background="@drawable/info_frame_bg"
-        android:padding="8dp"
-        android:layout_gravity="bottom|right">
+        android:orientation="vertical"
+        android:padding="8dp">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="玩家"
             android:textColor="@color/colorTitle"
-            android:textSize="14sp"/>
+            android:textSize="14sp" />
+
         <TextView
             android:id="@+id/balance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="余额："
             android:textColor="@color/colorTitle"
-            android:textSize="14sp"/>
+            android:textSize="14sp" />
+
         <TextView
             android:id="@+id/bet"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="赌注："
             android:textColor="@color/colorTitle"
-            android:textSize="14sp"/>
+            android:textSize="14sp" />
     </LinearLayout>
+
+    <Button
+        android:id="@+id/start"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/btn_bg"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="1dp"
+        android:text="开始"
+        android:textColor="@color/colorTitle"
+        android:textSize="14sp"/>
+
+    <Button
+        android:id="@+id/restart"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/btn_bg"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="1dp"
+        android:text="重置"
+        android:visibility="gone"
+        android:textColor="@color/colorTitle"
+        android:textSize="14sp"/>
 
     <!-- 下注按钮组 -->
     <LinearLayout
         android:id="@+id/bet_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_gravity="bottom|center_horizontal"
-        android:visibility="gone"
-        android:layout_marginBottom="1dp">
+        android:layout_marginBottom="1dp"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
         <Button
             android:id="@+id/bet_plus_100"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:background="@drawable/btn_bg"
             android:layout_marginRight="6dp"
-            android:textSize="14sp"
+            android:background="@drawable/btn_bg"
             android:text="+100"
-            android:textColor="@color/colorTitle"/>
+            android:textColor="@color/colorTitle"
+            android:textSize="14sp" />
+
         <Button
             android:id="@+id/bet_plus_10"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:padding="6dp"
-            android:background="@drawable/btn_bg"
             android:layout_marginRight="6dp"
+            android:background="@drawable/btn_bg"
+            android:padding="6dp"
             android:text="+10"
-            android:textSize="14sp"
-            android:textColor="@color/colorTitle"/>
+            android:textColor="@color/colorTitle"
+            android:textSize="14sp" />
+
         <Button
             android:id="@+id/bet_minus_100"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:padding="6dp"
-            android:background="@drawable/btn_bg"
             android:layout_marginRight="6dp"
-            android:textSize="14sp"
+            android:background="@drawable/btn_bg"
+            android:padding="6dp"
             android:text="-100"
-            android:textColor="@color/colorTitle"/>
+            android:textColor="@color/colorTitle"
+            android:textSize="14sp" />
+
         <Button
             android:id="@+id/bet_minus_10"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:padding="6dp"
-            android:background="@drawable/btn_bg"
             android:layout_marginRight="6dp"
-            android:textSize="14sp"
+            android:background="@drawable/btn_bg"
+            android:padding="6dp"
             android:text="-10"
-            android:textColor="@color/colorTitle"/>
+            android:textColor="@color/colorTitle"
+            android:textSize="14sp" />
+
         <Button
             android:id="@+id/bet_confirm"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:padding="6dp"
             android:background="@drawable/btn_bg"
-            android:textSize="14sp"
+            android:padding="6dp"
             android:text="下注"
-            android:textColor="@color/colorTitle"/>
+            android:textColor="@color/colorTitle"
+            android:textSize="14sp" />
     </LinearLayout>
+
+    <!-- 加倍按钮 -->
+    <LinearLayout
+        android:id="@+id/double_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="1dp"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/double_do_double"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btn_bg"
+            android:padding="6dp"
+            android:layout_marginRight="6dp"
+            android:text="加倍"
+            android:textColor="@color/colorTitle"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/double_dont_double"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btn_bg"
+            android:padding="6dp"
+            android:text="不加倍"
+            android:textColor="@color/colorTitle"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <!-- 购买保险按钮 -->
+    <LinearLayout
+        android:id="@+id/insurance_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="1dp"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="是否购买保险，金额为当前赌注的一半？（如庄家有黑杰克则玩家赢）"
+            android:layout_marginBottom="4dp"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/insurance_do_buy"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/btn_bg"
+                android:layout_marginRight="6dp"
+                android:padding="6dp"
+                android:text="购买"
+                android:textColor="@color/colorTitle"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/insurance_dont_buy"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/btn_bg"
+                android:padding="6dp"
+                android:text="不购买"
+                android:textColor="@color/colorTitle"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- 加牌按钮 -->
+    <LinearLayout
+        android:id="@+id/add_card_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="1dp"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/card_do_add"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btn_bg"
+            android:padding="6dp"
+            android:layout_marginRight="6dp"
+            android:text="抽牌"
+            android:textColor="@color/colorTitle"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/card_dont_add"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btn_bg"
+            android:padding="6dp"
+            android:text="放弃"
+            android:textColor="@color/colorTitle"
+            android:textSize="14sp" />
+    </LinearLayout>
+
 
 </FrameLayout>

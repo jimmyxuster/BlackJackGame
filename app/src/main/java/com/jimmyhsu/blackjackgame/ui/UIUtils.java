@@ -30,11 +30,15 @@ public class UIUtils {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
     }
 
-    public static Bitmap getCardBitmap(Context context, int point, int suit, float targetWidth, float targetHeight) {
-        Bitmap result = mBitmapCache.get(CARD_RES[suit * 13 + point - 1]);
+    public static Bitmap getCardBitmap(Context context, int point, int suit, boolean visible, float targetWidth, float targetHeight) {
+        Bitmap result = mBitmapCache.get(visible ? CARD_RES[suit * 13 + point - 1] : -1);
         if (result == null) {
-            result = getBitmap(context, CARD_RES[suit * 13 + point - 1], targetWidth, targetHeight);
-            mBitmapCache.put(CARD_RES[suit * 13 + point - 1], result);
+            if (visible) {
+                result = getBitmap(context, CARD_RES[suit * 13 + point - 1], targetWidth, targetHeight);
+            } else {
+                result = getBitmap(context, R.drawable.back, targetWidth, targetHeight);
+            }
+            mBitmapCache.put(visible ? CARD_RES[suit * 13 + point - 1] : -1, result);
         }
         return result;
     }
