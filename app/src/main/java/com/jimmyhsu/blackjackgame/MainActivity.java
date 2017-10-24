@@ -338,7 +338,7 @@ public class MainActivity extends AppCompatActivity implements GameView.OnGameVi
             @Override
             public void run() {
                 mGame.buyInsurance();
-                mGame.proceedFirstRound();
+                mGame.proceedNextRound();
             }
         }, 500);
     }
@@ -348,7 +348,7 @@ public class MainActivity extends AppCompatActivity implements GameView.OnGameVi
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                mGame.proceedFirstRound();
+                mGame.proceedNextRound();
             }
         }, 500);
     }

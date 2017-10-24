@@ -4,7 +4,6 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.RectF;
-import android.util.Log;
 
 import com.jimmyhsu.blackjackgame.ui.UIUtils;
 
@@ -30,6 +29,7 @@ public class Card {
     private boolean isVisible = false;
 
     private volatile RectF mCurrPosition = new RectF();
+    private volatile float mCurrAngle;
 
     private ValueAnimator mMoveAnimator;
 
@@ -94,8 +94,16 @@ public class Card {
         isVisible = visible;
     }
 
-    public void draw(Context context, Canvas canvas, int targetWidth, int targetHeight) {
+    public void setAngle(float angle) {
+        this.mCurrAngle = angle;
+    }
+
+    public void draw(Context context, Canvas canvas, int targetWidth, int targetHeight,
+                     float centerX, float centerY) {
+        canvas.save();
+        canvas.rotate(mCurrAngle, centerX, centerY);
         canvas.drawBitmap(UIUtils.getCardBitmap(context, point, suit, isVisible, targetWidth, targetHeight),
                 null, mCurrPosition, null);
+        canvas.restore();
     }
 }

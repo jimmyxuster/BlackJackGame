@@ -28,6 +28,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
     private static final int[] BACKGROUND_GRADIENT = new int[]{0xFF2A5E26, 0xFF429435, 0xFF2A5E26};
     private static final int TITLE_COLOR = 0xFF780D0B;
     private static final int ARC_COLOR = 0xFFF7FE29;
+    private static final int HIGHTLIGHT_COLOR = 0xFF181E9D;
     private static final int ARC_START_ANGLE = 45;
     private static final int ARC_END_ANGLE = 135;
     private static final int ARC_PADDING_DP = 8;
@@ -48,6 +49,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
     private Paint mTitlePaint;
     private Paint mArcPaint;
     private Paint mPointPaint;
+    private Paint mHighlightPaint;
     private float mTitlePathLength;
     private float mTitleLength;
     private float mTitleHeight;
@@ -60,6 +62,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
     private int mFrameHeight;
     private int mFramePadding;
     private int mArcPaddingDp;
+    private int mHighlightAlpha = 0;
+    private int mHighlightAlphaFactor = 1;
 
     private Bitmap mCardBack;
     private Rect mCardPileRect;
@@ -119,6 +123,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
         mPointPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPointPaint.setTextSize(UIUtils.sp2px(getContext(), 14));
         mPointPaint.setColor(0xffffffff);
+
+        mHighlightPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mHighlightPaint.setStyle(Paint.Style.STROKE);
+        mHighlightPaint.setColor(HIGHTLIGHT_COLOR);
+        mHighlightPaint.setStrokeWidth(UIUtils.dp2px(getContext(), 2));
     }
 
     @Override
@@ -155,6 +164,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
                 drawCardPendingFrame();
                 drawCards();
                 drawCardPile();
+                drawHighlight();
                 drawPointSums();
             }
 
@@ -167,17 +177,67 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
         }
     }
 
+    private void drawHighlight() {
+        AnimatorHelper.POSITION currHighlight = mAnimatorHelper.getCurrHighlight();
+        if (currHighlight != null) {
+            int highlightWidth = mFrameWidth + 30 * (mAnimatorHelper.getCardCountOnScreen(currHighlight) - 1);
+            float l = mWidth / 2f;
+            float t = mWidth / 4f + mFramePadding;
+            mCanvas.save();
+            switch (currHighlight) {
+                case POS_PLAYER_LEFT:
+                    mCanvas.rotate(45, mWidth / 2f, 0);
+                    l = mWidth / 2f;
+                    break;
+                case POS_PLAYER_CENTER:
+                    l = mWidth / 2f - mFrameWidth / 2f;
+                    break;
+                case POS_PLAYER_RIGHT:
+                    mCanvas.rotate(-45, mWidth / 2f, 0);
+                    l = mWidth / 2f - mFrameWidth;
+                    break;
+            }
+            mHighlightPaint.setAlpha(mHighlightAlpha);
+            mCanvas.drawRect(l, t, l + highlightWidth, t + mFrameHeight, mHighlightPaint);
+            mCanvas.restore();
+            mHighlightAlpha = mHighlightAlpha + mHighlightAlphaFactor * 30;
+            if (mHighlightAlpha > 255) mHighlightAlpha = 255;
+            if (mHighlightAlpha < 0) mHighlightAlpha = 0;
+            if (mHighlightAlpha == 255) {
+                mHighlightAlphaFactor = -1;
+            } else if (mHighlightAlpha == 0) {
+                mHighlightAlphaFactor = 1;
+            }
+        }
+    }
+
     private void drawPointSums() {
         if (mGame != null) {
             String dealerPoint = String.valueOf(mGame.getDealerPoint());
-            String playerPoint = String.valueOf(mGame.getPlayerPoint());
+            String playerPointLeft = String.valueOf(mGame.getPlayerPointLeft());
+            String playerPointCenter = String.valueOf(mGame.getPlayerPointCenter());
+            String playerPointRight = String.valueOf(mGame.getPlayerPointRight());
             float dealerPointWidth = mPointPaint.measureText(dealerPoint, 0, dealerPoint.length());
-            float playerPointWidth = mPointPaint.measureText(playerPoint, 0, playerPoint.length());
+            float playerPointLeftWidth = mPointPaint.measureText(playerPointLeft, 0, playerPointLeft.length());
+            float playerPointCenterWidth = mPointPaint.measureText(playerPointLeft, 0, playerPointCenter.length());
+            float playerPointRightWidth = mPointPaint.measureText(playerPointLeft, 0, playerPointRight.length());
             if (mGame.shouldDrawDealerPoint() && Integer.parseInt(dealerPoint) > 0) {
                 mCanvas.drawText(dealerPoint, mWidth / 2f - dealerPointWidth - 30 - mFrameWidth / 2f, 30 + mFrameHeight / 2f, mPointPaint);
             }
-            if (Integer.parseInt(playerPoint) > 0) {
-                mCanvas.drawText(playerPoint, mWidth / 2f - playerPointWidth - 30 - mFrameWidth / 2f, mWidth / 4f + mFramePadding + mFrameHeight / 2f, mPointPaint);
+            if (Integer.parseInt(playerPointLeft) > 0) {
+                mCanvas.save();
+                mCanvas.rotate(45, mWidth / 2f, 0);
+                mCanvas.drawText(playerPointLeft, mWidth / 2f - playerPointLeftWidth - 30, mWidth / 4f + mFramePadding + mFrameHeight / 2f, mPointPaint);
+                mCanvas.restore();
+            }
+            if (Integer.parseInt(playerPointCenter) > 0) {
+                mCanvas.drawText(playerPointCenter, mWidth / 2f - playerPointCenterWidth - 30 - mFrameWidth / 2f, mWidth / 4f + mFramePadding + mFrameHeight / 2f, mPointPaint);
+            }
+            if (Integer.parseInt(playerPointRight) > 0) {
+                mCanvas.save();
+                mCanvas.rotate(-45, mWidth / 2f, 0);
+                mCanvas.drawText(playerPointRight, mWidth / 2f - playerPointRightWidth - 30 - mFrameWidth, mWidth / 4f + mFramePadding + mFrameHeight / 2f, mPointPaint);
+                mCanvas.restore();
             }
         }
     }
@@ -189,26 +249,26 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
     private void drawCards() {
         if (mAnimatorHelper.getCards().size() > 0) {
             for (Card card: mAnimatorHelper.getCards()) {
-                card.draw(getContext(), mCanvas, mFrameWidth, mFrameHeight);
+                card.draw(getContext(), mCanvas, mFrameWidth, mFrameHeight, mWidth / 2f, 0);
             }
         }
     }
 
     private void drawCardPendingFrame() {
 
-        // 最右侧的方块区域，目前没有做多手牌的功能，所以这是摆样子的
+        // 最右侧的方块区域
         mCanvas.save();
         mCanvas.rotate(-(90 - ARC_START_ANGLE), mWidth / 2f, 0);
         mCanvas.drawRect(mWidth / 2f - mFrameWidth, mWidth / 4f + mFramePadding, mWidth / 2f, mWidth / 4f + mFramePadding + mFrameHeight, mArcPaint);
         mCanvas.restore();
 
-        // 最左侧的方块区域，这也是摆样子的
+        // 最左侧的方块区域
         mCanvas.save();
         mCanvas.rotate(90 - ARC_START_ANGLE, mWidth / 2f, 0);
         mCanvas.drawRect(mWidth / 2f, mWidth / 4f + mFramePadding, mWidth / 2f + mFrameWidth, mWidth / 4f + mFramePadding + mFrameHeight, mArcPaint);
         mCanvas.restore();
 
-        // 中间的方块区域，这是玩家的牌放置的位置，故意偏上一点点
+        // 中间的方块区域
         mCanvas.drawRect(mWidth / 2f - mFrameWidth / 2f, mWidth / 4f + mFramePadding, mWidth / 2f + mFrameWidth / 2f, mWidth / 4f + mFramePadding + mFrameHeight, mArcPaint);
     }
 

@@ -3,7 +3,9 @@ package com.jimmyhsu.blackjackgame.bean.common;
 import com.jimmyhsu.blackjackgame.bean.Card;
 import com.jimmyhsu.blackjackgame.ui.AnimatorHelper;
 
-import java.util.Stack;
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * Created by xuyanzhe on 22/10/17.
@@ -12,22 +14,26 @@ import java.util.Stack;
 public class CommonPlayer {
 
     private int balance;
-    private Stack<Card> cards;
+    private List<Card> cards;
     private AnimatorHelper sAnimatorHelper = AnimatorHelper.getInstance();
 
     public CommonPlayer(int balance) {
         this.balance = balance;
-        this.cards = new Stack<>();
+        this.cards = new ArrayList<>();
     }
 
     public boolean haveBlackJack() {
         return this.cards.size() == 2 && getPoint() == 21;
     }
 
+    protected AnimatorHelper getAnimatorHelper() {
+        return sAnimatorHelper;
+    }
+
     //将参数中的card追加到成员变量cards
     public void assignCard(Card[] cards, AnimatorHelper.POSITION pos) {
         for (Card c : cards) {
-            this.cards.push(c);
+            this.cards.add(c);
             sAnimatorHelper.addCard(c);
             sAnimatorHelper.animateMovement(AnimatorHelper.POSITION.POS_STORAGE, pos, c);
         }
@@ -40,7 +46,7 @@ public class CommonPlayer {
         cards.clear();
     }
 
-    public Stack<Card> getCards() {
+    public List<Card> getCards() {
         return cards;
     }
 
