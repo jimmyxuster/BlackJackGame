@@ -82,6 +82,11 @@ public class MainActivity extends AppCompatActivity implements GameView.OnGameVi
         mGameView.setGame(mGame);
         mGameView.setOnGameViewReadyListener(this);
         initMessageView();
+        queryMode();
+    }
+
+    private void queryMode() {
+
     }
 
     private void initMessageView() {

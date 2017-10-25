@@ -96,8 +96,8 @@ public class BlackJackGame {
     public void playerChooseAdd() {
         sAnimatorHelper.setCurrHighlight(null);
         Card[] addedCard = deck.extractCardFromTop(1);
-        player.assignCard(addedCard, POSITIONS[mCurrPosIndex]);
         addedCard[0].setVisible(true);
+        player.assignCard(addedCard, POSITIONS[mCurrPosIndex]);
         if (player.burst(POSITIONS[mCurrPosIndex])) {
             playerStopAdd();
         } else {

@@ -18,6 +18,8 @@ import com.jimmyhsu.blackjackgame.R;
 import com.jimmyhsu.blackjackgame.bean.Card;
 import com.jimmyhsu.blackjackgame.biz.BlackJackGame;
 
+import java.util.List;
+
 
 /**
  * Created by xuyanzhe on 17/10/17.
@@ -247,8 +249,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
     }
 
     private void drawCards() {
-        if (mAnimatorHelper.getCards().size() > 0) {
-            for (Card card: mAnimatorHelper.getCards()) {
+        List<Card> cards = mAnimatorHelper.getCards();
+        if (cards != null && cards.size() > 0) {
+            for (Card card: cards) {
                 card.draw(getContext(), mCanvas, mFrameWidth, mFrameHeight, mWidth / 2f, 0);
             }
         }

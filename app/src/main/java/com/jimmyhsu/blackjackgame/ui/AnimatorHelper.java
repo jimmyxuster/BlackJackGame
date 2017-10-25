@@ -47,7 +47,7 @@ public class AnimatorHelper {
     private POSITION mHighlightRestore = null;
     private boolean isAnimating = false;
 
-    private List<Card> cards = new ArrayList<>();
+    private volatile List<Card> cards = new ArrayList<>();
 
     private AnimatorHelper() {
 
@@ -70,8 +70,10 @@ public class AnimatorHelper {
 
     public void addCard(Card card) {
         if (cards.indexOf(card) >= 0) return;
-        cards.add(card);
+        List<Card> newList = new ArrayList<>(cards);
+        newList.add(card);
         card.setCurrPosition(cardStorageX, cardStorageY, cardStorageX + cardWidth, cardStorageY + cardHeight);
+        cards = newList;
     }
 
     public void reset() {
