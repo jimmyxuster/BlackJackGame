@@ -221,8 +221,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
             String playerPointRight = String.valueOf(mGame.getPlayerPointRight());
             float dealerPointWidth = mPointPaint.measureText(dealerPoint, 0, dealerPoint.length());
             float playerPointLeftWidth = mPointPaint.measureText(playerPointLeft, 0, playerPointLeft.length());
-            float playerPointCenterWidth = mPointPaint.measureText(playerPointLeft, 0, playerPointCenter.length());
-            float playerPointRightWidth = mPointPaint.measureText(playerPointLeft, 0, playerPointRight.length());
+            float playerPointCenterWidth = mPointPaint.measureText(playerPointCenter, 0, playerPointCenter.length());
+            float playerPointRightWidth = mPointPaint.measureText(playerPointRight, 0, playerPointRight.length());
             if (mGame.shouldDrawDealerPoint() && Integer.parseInt(dealerPoint) > 0) {
                 mCanvas.drawText(dealerPoint, mWidth / 2f - dealerPointWidth - 30 - mFrameWidth / 2f, 30 + mFrameHeight / 2f, mPointPaint);
             }

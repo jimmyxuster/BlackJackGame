@@ -8,8 +8,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
@@ -86,7 +88,32 @@ public class MainActivity extends AppCompatActivity implements GameView.OnGameVi
     }
 
     private void queryMode() {
+        final AlertDialog dialog = new AlertDialog.Builder(this)
+                .setCancelable(false)
+                .create();
+        dialog.show();
+        Window window = dialog.getWindow();
+        window.setContentView(R.layout.mode_select_window);
+        View singleModeOptionView = window.findViewById(R.id.mode_single);
+        View multiModeOptionView = window.findViewById(R.id.mode_multi);
+        singleModeOptionView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setMode(BlackJackGame.MODE_SINGLE);
+                dialog.dismiss();
+            }
+        });
+        multiModeOptionView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setMode(BlackJackGame.MODE_MULTI);
+                dialog.dismiss();
+            }
+        });
+    }
 
+    private void setMode(int mode) {
+        mGame.setMode(mode);
     }
 
     private void initMessageView() {
@@ -281,6 +308,7 @@ public class MainActivity extends AppCompatActivity implements GameView.OnGameVi
                 showPopupAnimation(mStartButton);
             }
         }, 1000);
+        queryMode();
     }
 
     /**
@@ -343,7 +371,11 @@ public class MainActivity extends AppCompatActivity implements GameView.OnGameVi
             @Override
             public void run() {
                 mGame.buyInsurance();
-                mGame.proceedNextRound();
+                if (mGame.getMode() == BlackJackGame.MODE_SINGLE) {
+                    mGame.askDouble();
+                } else {
+                    mGame.proceedNextRound();
+                }
             }
         }, 500);
     }
@@ -353,7 +385,11 @@ public class MainActivity extends AppCompatActivity implements GameView.OnGameVi
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                mGame.proceedNextRound();
+                if (mGame.getMode() == BlackJackGame.MODE_SINGLE) {
+                    mGame.askDouble();
+                } else {
+                    mGame.proceedNextRound();
+                }
             }
         }, 500);
     }

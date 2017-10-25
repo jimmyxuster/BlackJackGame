@@ -12,6 +12,11 @@ import java.util.Locale;
 
 public class BlackJackGame {
 
+    public static final int MODE_SINGLE = 1;
+    public static final int MODE_MULTI = 2;
+
+    private int mMode;
+
     private static final int PLAYER_INITIAL_BALANCE = 1000;
     private static final int DEALER_INITIAL_BALANCE = 5000000;
     private static final AnimatorHelper.POSITION[] POSITIONS = {AnimatorHelper.POSITION.POS_PLAYER_LEFT, AnimatorHelper.POSITION.POS_PLAYER_CENTER, AnimatorHelper.POSITION.POS_PLAYER_RIGHT};
@@ -20,10 +25,17 @@ public class BlackJackGame {
     private Player player;
     private Dealer dealer;
     private boolean hasInsurance = false;
-    private boolean isDoubled = false;
 
     private InteractHelper mInteractHelper;
     private AnimatorHelper sAnimatorHelper = AnimatorHelper.getInstance();
+
+    public void setMode(int mode) {
+        this.mMode = mode;
+    }
+
+    public int getMode() {
+        return mMode;
+    }
 
     public void setInteractHelper(InteractHelper helper) {
         this.mInteractHelper = helper;
@@ -51,32 +63,9 @@ public class BlackJackGame {
         initAssignCard();
         if (shouldAskInsurance()) {
             askInsurance();
+        } else if (mMode == MODE_SINGLE) {
+            askDouble();
         } else {
-            proceedNextRound();
-        }
-    }
-
-    private boolean checkDealerBlackJack() {
-        // check dealer
-        if (dealer.haveBlackJack()) {
-            dealer.setCardVisible();
-            if (hasInsurance) {
-                returnInsurance();
-                setPlayerWinDirect();
-            } else {
-                setDealerWinDirect();
-            }
-            return true;
-        }
-        return false;
-    }
-
-    public void proceedFirstRound() {
-        if (dealer.haveBlackJack() && hasInsurance) {
-            dealer.setCardVisible();//将dealer的暗牌翻过来
-            returnInsurance();
-            setPlayerWin();
-        } else if (mInteractHelper != null) {
             proceedNextRound();
         }
     }
@@ -84,6 +73,7 @@ public class BlackJackGame {
     public void proceedNextRound() {
         if (dealer.haveBlackJack()) {
             if (hasInsurance) {
+                changePlayerBalance(player.getBalance() + player.getInsurance() + player.getBet());
                 setPlayerWinDirect();
             } else {
                 setDealerWinDirect();
@@ -97,8 +87,8 @@ public class BlackJackGame {
         sAnimatorHelper.setCurrHighlight(null);
         Card[] addedCard = deck.extractCardFromTop(1);
         addedCard[0].setVisible(true);
-        player.assignCard(addedCard, POSITIONS[mCurrPosIndex]);
-        if (player.burst(POSITIONS[mCurrPosIndex])) {
+        player.assignCard(addedCard, mMode == MODE_SINGLE ? AnimatorHelper.POSITION.POS_PLAYER_CENTER : POSITIONS[mCurrPosIndex]);
+        if (player.burst(mMode == MODE_SINGLE ? AnimatorHelper.POSITION.POS_PLAYER_CENTER : POSITIONS[mCurrPosIndex])) {
             playerStopAdd();
         } else {
             askPlayerAdd();
@@ -107,7 +97,7 @@ public class BlackJackGame {
 
     public void playerStopAdd() {
         sAnimatorHelper.setCurrHighlight(null);
-        if (mCurrPosIndex < 2) {
+        if (mCurrPosIndex < 2 && mMode == MODE_MULTI) {
             mCurrPosIndex++;
             askPlayerAdd();
         } else {
@@ -119,31 +109,6 @@ public class BlackJackGame {
                 judgeResult();
             }
         }
-    }
-
-    private void setEven() {
-        dealer.setBalance(dealer.getBalance() - player.getBet());
-        changePlayerBalance(player.getBalance() + player.getBet());
-        print("游戏平局！");
-        if (mInteractHelper != null) {
-            mInteractHelper.gameEnd();
-        }
-    }
-
-    private void setPlayerDoubleWin() {
-        int bet = player.getBet();
-        dealer.setBalance(dealer.getBalance() - 3 * bet);
-        changePlayerBalance(player.getBalance() + 3 * bet);
-        print("玩家胜利且获得1赔2！");
-        if (mInteractHelper != null) {
-            mInteractHelper.gameEnd();
-        }
-    }
-
-    private void returnInsurance() {
-        int insurance = player.getInsurance();
-        dealer.setBalance(dealer.getBalance() - insurance);
-        changePlayerBalance(player.getBalance() + insurance);
     }
 
     public void buyInsurance() {
@@ -172,17 +137,26 @@ public class BlackJackGame {
             setDealerWinDirect();
         } else {
             int dealerPoint = dealer.getPoint();
-            int winCount = 0;
-            for (AnimatorHelper.POSITION pos : POSITIONS) {
-                int playerPoint = player.getPoint(pos);
+            if (mMode == MODE_SINGLE) {
+                int playerPoint = player.getPoint(AnimatorHelper.POSITION.POS_PLAYER_CENTER);
                 if (playerPoint <= 21 && playerPoint >= dealerPoint) {
-                    winCount++;
+                    setPlayerWin();
+                } else {
+                    setDealerWin();
                 }
-            }
-            if (winCount >= 2) {
-                setPlayerWin();
             } else {
-                setDealerWin();
+                int winCount = 0;
+                for (AnimatorHelper.POSITION pos : POSITIONS) {
+                    int playerPoint = player.getPoint(pos);
+                    if (playerPoint <= 21 && playerPoint >= dealerPoint) {
+                        winCount++;
+                    }
+                }
+                if (winCount >= 2) {
+                    setPlayerWin();
+                } else {
+                    setDealerWin();
+                }
             }
         }
     }
@@ -201,7 +175,7 @@ public class BlackJackGame {
     }
 
     private void askPlayerAdd() {
-        sAnimatorHelper.setCurrHighlight(POSITIONS[mCurrPosIndex]);
+        sAnimatorHelper.setCurrHighlight(mMode == MODE_SINGLE ? AnimatorHelper.POSITION.POS_PLAYER_CENTER : POSITIONS[mCurrPosIndex]);
         if (mInteractHelper != null) {
             mInteractHelper.showNotification("请选择是否再抽一张牌");
             mInteractHelper.askPlayerAdd();
@@ -240,7 +214,6 @@ public class BlackJackGame {
 
     public void resetGame() {
         hasInsurance = false;
-        isDoubled = false;
         mCurrPosIndex = 0;
         changePlayerBet(0);
         dealer.removeAllCards(AnimatorHelper.POSITION.POS_DEALER);
@@ -257,23 +230,22 @@ public class BlackJackGame {
         return dealer.getCards().get(0).getPoint() == 1;
     }
 
-    private void askDouble() {
+    public void askDouble() {
         if (mInteractHelper != null) {
             mInteractHelper.askDouble();
         }
     }
 
     public void doubleBet() {
-        isDoubled = true;
         int bet = player.getBet();
         changePlayerBet(bet * 2);
         changePlayerBalance(player.getBalance() - bet);
         dealer.setBalance(dealer.getBalance() + bet);
-        askInsurance();
+        proceedNextRound();
     }
 
     public void singleBet() {
-        askInsurance();
+        proceedNextRound();
     }
 
     //第一次分牌，给dealer一明一暗，给player3组两张明牌
@@ -281,7 +253,12 @@ public class BlackJackGame {
         Card[] cards = deck.extractCardFromTop(2);
         cards[0].setVisible(true);
         dealer.assignCard(cards, AnimatorHelper.POSITION.POS_DEALER);
-        AnimatorHelper.POSITION[] positions = {AnimatorHelper.POSITION.POS_PLAYER_LEFT, AnimatorHelper.POSITION.POS_PLAYER_CENTER, AnimatorHelper.POSITION.POS_PLAYER_RIGHT};
+        AnimatorHelper.POSITION[] positions;
+        if (mMode == MODE_MULTI) {
+            positions = new AnimatorHelper.POSITION[]{AnimatorHelper.POSITION.POS_PLAYER_LEFT, AnimatorHelper.POSITION.POS_PLAYER_CENTER, AnimatorHelper.POSITION.POS_PLAYER_RIGHT};
+        } else {
+            positions = new AnimatorHelper.POSITION[]{AnimatorHelper.POSITION.POS_PLAYER_CENTER};
+        }
         for (AnimatorHelper.POSITION pos : positions) {
             cards = deck.extractCardFromTop(2);
             cards[0].setVisible(true);
